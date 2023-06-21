@@ -70,7 +70,12 @@ void OmniDrive::yawCallback(const std_msgs::Float32::ConstPtr& msg)
    curHeading = -msg->data*PI/180;
 }
 
+OmniDrive::OmniDrive() {
+}
 OmniDrive::OmniDrive(ros::NodeHandle *nh) {
+    Init(nh);
+}
+void OmniDrive::Init(ros::NodeHandle *nh) {
 
     srv_motor_speed = nh->serviceClient<vmxpi_ros::MotorSpeed>("titan/set_motor_speed", true);
     srv_resetNavx = nh->serviceClient<std_srvs::Empty>("reset_navx");
@@ -312,19 +317,19 @@ void OmniDrive::publish_data()
 void OmniDrive::publish_motors()
 {
     double t0, t1;
-    vmxpi_ros::MotorSpeed msg1;
+    vmxpi_ros::MotorSpeed msg;
     t0 = ros::Time::now().toSec();
-    msg1.request.speed = -motorOut[0]; //Motor speed id reversed from out convention
-    msg1.request.motor = 0;
-    srv_motor_speed.call(msg1);
+    msg.request.speed = -motorOut[0]; //Motor speed id reversed from out convention
+    msg.request.motor = 0;
+    srv_motor_speed.call(msg);
 
-    msg1.request.speed = -motorOut[1];
-    msg1.request.motor = 1;
-    srv_motor_speed.call(msg1);
+    msg.request.speed = -motorOut[1];
+    msg.request.motor = 1;
+    srv_motor_speed.call(msg);
 
-    msg1.request.speed = -motorOut[2];
-    msg1.request.motor = 2;
-    srv_motor_speed.call(msg1);
+    msg.request.speed = -motorOut[2];
+    msg.request.motor = 2;
+    srv_motor_speed.call(msg);
     t1 = ros::Time::now().toSec();
     ROS_INFO("msg: %f \n", t1-t0);
 }

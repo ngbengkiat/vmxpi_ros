@@ -1,0 +1,3 @@
+<launch>
+	<node pkg="vmxpi_ros_bringup" name="teleop_node" type="teleop_node" output="screen"/> 
+</launch>

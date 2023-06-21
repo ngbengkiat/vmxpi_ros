@@ -68,6 +68,7 @@ class OmniDrive {
         ros::Publisher pub_pidInput, pub_pidOutput, pub_motorOut, pub_error, pub_fb;
 
         public:
+        OmniDrive();
         OmniDrive(ros::NodeHandle *nh);
         void Run(); // Run loop on separate thread to disable/enable Titan
         void DoRun(); // Run loop on separate thread to disable/enable Titan
@@ -75,6 +76,7 @@ class OmniDrive {
         void encoderDistCallback(const std_msgs::Float32::ConstPtr& msg, int enc);
         void yawCallback(const std_msgs::Float32::ConstPtr& msg);
 
+        void Init(ros::NodeHandle *nh);
         void UpdateOdometry();
         void CalWheeSpeeds(double x, double y);
         void DoPID();

@@ -38,6 +38,7 @@ TitanDriverROSWrapper::TitanDriverROSWrapper(ros::NodeHandle *nh, VMXPi *vmx) :
     motor2speed_pub = nh->advertise<std_msgs::Float32>("titan/motor2/speed", 1);
     motor3speed_pub = nh->advertise<std_msgs::Float32>("titan/motor3/speed", 1);
 
+    enc0123_pub = nh->advertise<std_msgs::Int32MultiArray>("titan/encoders", 1);
     enc0_pub = nh->advertise<std_msgs::Int32>("titan/encoder0/count", 1);
     enc1_pub = nh->advertise<std_msgs::Int32>("titan/encoder1/count", 1);
     enc2_pub = nh->advertise<std_msgs::Int32>("titan/encoder2/count", 1);
@@ -158,7 +159,10 @@ void TitanDriverROSWrapper::GetCountRPM() {
     Titan->GetCountRPM(2);
     Titan->GetCountRPM(3);
 }
+void TitanDriverROSWrapper::PubEncoders() {
+    std_msgs::Int32 msg;
 
+}
 void TitanDriverROSWrapper::PubEncoderCount(int8_t encoder) {
     std_msgs::Int32 msg;
     Titan->GetEncoderCount(&msg, encoder);

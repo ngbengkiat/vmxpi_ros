@@ -31,6 +31,7 @@ add_service_files(
   Float.srv
   FloatRes.srv
   MotorSpeed.srv
+  MotorSpeed012.srv
   StopMode.srv
   StringRes.srv
 )

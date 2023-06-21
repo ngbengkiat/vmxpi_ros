@@ -178,3 +178,31 @@ add_dependencies(main_node
 	digitalin_ros
 	digitalout_ros
   	${PROJECT_NAME}_gencfg)
+
+add_executable(teleop_node src/teleop.cpp src/OmniDrive.cpp src/SpeedProfile.cpp)
+target_link_libraries(teleop_node PRIVATE
+	vmxpi_hal 
+	navx_ros_wrapper 
+	titandriver_ros 
+	titandriver_ros_wrapper 
+	cobra_ros 
+	sharp_ros
+	servo_ros 
+	ultrasonic_ros
+	iowd_ros
+	digitalin_ros
+	digitalout_ros
+	${catkin_LIBRARIES}
+)
+add_dependencies(teleop_node 
+	navx_ros_wrapper 
+	titandriver_ros 
+	titandriver_ros_wrapper 
+	cobra_ros 
+	sharp_ros
+	servo_ros 
+	ultrasonic_ros
+	iowd_ros
+	digitalin_ros
+	digitalout_ros
+	${PROJECT_NAME}_gencfg)	

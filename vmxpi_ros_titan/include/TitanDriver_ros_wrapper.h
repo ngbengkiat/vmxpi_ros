@@ -13,6 +13,8 @@
 #include <std_msgs/Int16.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/UInt16.h>
+#include <std_msgs/Int32MultiArray.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <vmxpi_ros/TitanInfo.h>
 #include <vmxpi_ros/UniqueID.h>
 #include <vmxpi_ros/Int.h>
@@ -29,7 +31,7 @@ class TitanDriverROSWrapper
                             motor_speed;
         ros::Publisher uniqueid_pub, info_publisher, motor0freq_pub, motor1freq_pub, motor2freq_pub, motor3freq_pub, 
                         motor0speed_pub, motor1speed_pub, motor2speed_pub, motor3speed_pub,
-                        enc0_pub, enc1_pub, enc2_pub, enc3_pub,
+                        enc0_pub, enc1_pub, enc2_pub, enc3_pub, enc0123_pub,
                         encdist0_pub, encdist1_pub, encdist2_pub, encdist3_pub,
                         rpm0_pub, rpm1_pub, rpm2_pub, rpm3_pub,
                         limitswitch_pub, mcutemp_pub;
@@ -99,6 +101,7 @@ class TitanDriverROSWrapper
         
         // Publish encoder counts to /titan/encoderX/count
         void PubEncoderCount(int8_t encoder);
+        void PubEncoders();
         
         // Publish encoder distances to /titan/encoderX/distance
         void PubEncoderDist(int8_t encoder);

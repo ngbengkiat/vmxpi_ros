@@ -13,8 +13,17 @@
 #include "SpeedProfile.h"
 
 static double PI = 3.14159265;
+OmniDrive g_OmniDrive;
 
 
+void cmd_velCallback(const geometry_msgs::Twist& msg)
+{
+    double x = -msg.linear.x*0.45;    //Right side joystick is negative when right.
+    double y = msg.linear.y*0.45;     //Right up/dn joystick is positive when up
+    double w = msg.angular.z*2;
+    g_OmniDrive.SetRobotSpeedxyw(x, y, w);
+
+}
 
 int main(int argc, char **argv)
 {
@@ -36,19 +45,16 @@ int main(int argc, char **argv)
     navXROSWrapper navx(&nh, &vmx);
     ROS_INFO("navX driver is now started");
 
+    ros::Subscriber sub_vel_cmd = nh.subscribe("robot/cmd_vel", 1, cmd_velCallback);
     ros::Publisher pub_debug = nh.advertise<std_msgs::Float32>("debug", 1);
-   OmniDrive m_omnidrive(&nh);
+    g_OmniDrive.Init(&nh);
 
     ros::Rate loop_rate(50);
 
     double t = 0;
     while (ros::ok()) {
        
-        m_omnidrive.Move(1, 1);
-        m_omnidrive.Move(1, -1);
-        m_omnidrive.Move(0, 1);
-        m_omnidrive.Move(0, -1);
-        m_omnidrive.Move(2, 3.141592653589793/2);
+        loop_rate.sleep();
     }
    return 0;
 }
