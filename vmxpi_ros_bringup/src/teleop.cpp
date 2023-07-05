@@ -18,10 +18,11 @@ OmniDrive g_OmniDrive;
 
 void cmd_velCallback(const geometry_msgs::Twist& msg)
 {
-    double x = -msg.linear.x*0.45;    //Right side joystick is negative when right.
-    double y = msg.linear.y*0.45;     //Right up/dn joystick is positive when up
-    double w = msg.angular.z*2;
+    double x = -msg.linear.x*0.3;    //Right side joystick is negative when right.
+    double y = msg.linear.y*0.3;     //Right up/dn joystick is positive when up
+    double w = msg.angular.z;
     g_OmniDrive.SetRobotSpeedxyw(x, y, w);
+    // g_OmniDrive.SetRobotSpeed_open(x, y, w);
 
 }
 

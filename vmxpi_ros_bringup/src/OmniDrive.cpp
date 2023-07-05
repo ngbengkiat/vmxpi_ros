@@ -219,9 +219,13 @@ void OmniDrive::DoPID(){
     
     //Estimates x and y speed from individual wheel speeds
     //See formula below
-    feedback[0] = (-(wheelSpeed[0] + wheelSpeed[2]) + wheelSpeed[1])/2;
-    feedback[1] = (-wheelSpeed[0] + wheelSpeed[2])/(0.866025*2);
+    // a = 150, b = 270, c = 30
+    // feedback[0] = (-(wheelSpeed[0] + wheelSpeed[2]) + wheelSpeed[1])/2;
+    // feedback[1] = (-wheelSpeed[0] + wheelSpeed[2])/(0.866025*2);
 
+    // a = 135, b = 270, c = 45
+    feedback[0] = (-(wheelSpeed[0] + wheelSpeed[2])/(0.7071*2) + wheelSpeed[1])/2;
+    feedback[1] = (-wheelSpeed[0] + wheelSpeed[2])/(0.7071*2);
     //PID control for x and y speed
     //Speed control 
     pidOut[0] = m_pidController[0].calculate(feedback[0], pidIn[0]);
@@ -243,12 +247,18 @@ void OmniDrive::DoPID(){
     // The x and y speed are resolved into individual wheel speed
     // 3 wheel omni drive
     // R is distance of wheel from robot centre
-    // M0 = [-sin(150) cos(150) R] * [x y w]'   //Left-front wheel
-    // M1 = [-sin(270) cos(270) R]              //Back wheel
-    // M2 = [-sin(30)  cos(30)  R]              //Right-front wheel
-    motorOut[0] = (-0.5*pidOut[0] - 0.866025*pidOut[1]) + pidOut[2];
-    motorOut[1] = (     pidOut[0] + 0                 ) + pidOut[2];
-    motorOut[2] = (-0.5*pidOut[0] + 0.866025*pidOut[1]) + pidOut[2];
+    // M0 = [-sin(a) cos(a) R] * [x y w]'   //Left-front wheel
+    // M1 = [-sin(b) cos(b) R]              //Back wheel
+    // M2 = [-sin(c)  cos(c)  R]              //Right-front wheel
+    // a = 150, b = 270, c = 30
+    // motorOut[0] = (-0.5*pidOut[0] - 0.866025*pidOut[1]) + pidOut[2];
+    // motorOut[1] = (     pidOut[0] + 0                 ) + pidOut[2];
+    // motorOut[2] = (-0.5*pidOut[0] + 0.866025*pidOut[1]) + pidOut[2];
+
+    //a = 135, b = 270, c = 45
+    motorOut[0] = (-0.7071*pidOut[0] - 0.7071*pidOut[1]) + pidOut[2];
+    motorOut[1] = (        pidOut[0] + 0               ) + pidOut[2];
+    motorOut[2] = (-0.7071*pidOut[0] + 0.7071*pidOut[1]) + pidOut[2];
 
     LimitMotorOut();
 
@@ -270,13 +280,19 @@ void OmniDrive::SetRobotSpeedxyw(double x, double y, double w) {
     m_pidFlag = true;
 }
 void OmniDrive::SetRobotSpeed_open(double x, double y, double w){
-    // M0 = [-sin(150) cos(150) R] * [x y w]'   //Left-front wheel
-    // M1 = [-sin(270) cos(270) R]              //Back wheel
-    // M2 = [-sin(30)  cos(30)  R]              //Right-front wheel
+    // M0 = [-sin(a) cos(a) R] * [x y w]'   //Left-front wheel
+    // M1 = [-sin(b) cos(b) R]              //Back wheel
+    // M2 = [-sin(c)  cos(c)  R]              //Right-front wheel
     double robotRadius = 0.099;
-    motorOut[0] = (-0.5*x - 0.866025*y + w);
+    // a = 150, b = 270, c = 30
+    // motorOut[0] = (-0.5*x - 0.866025*y + w);
+    // motorOut[1] = (     x + 0          + w);
+    // motorOut[2] = (-0.5*x + 0.866025*y + w);
+
+        // a = 135, b = 270, c = 45
+    motorOut[0] = (-0.7071*x - 0.7071*y + w);
     motorOut[1] = (     x + 0          + w);
-    motorOut[2] = (-0.5*x + 0.866025*y + w);
+    motorOut[2] = (-0.7071*x + 0.7071*y + w);
 
     LimitMotorOut();
     m_pidFlag = false;
