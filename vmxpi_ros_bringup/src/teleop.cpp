@@ -13,15 +13,15 @@
 #include "SpeedProfile.h"
 
 static double PI = 3.14159265;
-OmniDrive g_OmniDrive;
 
+OmniDrive *pOmniDrive;
 
 void cmd_velCallback(const geometry_msgs::Twist& msg)
 {
     double x = -msg.linear.x*0.3;    //Right side joystick is negative when right.
     double y = msg.linear.y*0.3;     //Right up/dn joystick is positive when up
     double w = msg.angular.z;
-    g_OmniDrive.SetRobotSpeedxyw(x, y, w);
+    pOmniDrive->SetRobotSpeedxyw(x, y, w);
     // g_OmniDrive.SetRobotSpeed_open(x, y, w);
 
 }
@@ -29,7 +29,7 @@ void cmd_velCallback(const geometry_msgs::Twist& msg)
 int main(int argc, char **argv)
 {
    system("/usr/local/frc/bin/frcKillRobot.sh"); //Terminal call to kill the robot manager used for WPILib before running the executable.
-   ros::init(argc, argv, "main_node");
+   ros::init(argc, argv, "vmxpi_ros_wrapper");
   
    ros::AsyncSpinner spinner(4); //Allows callbacks from multiple threads; spins asynchronously using 4 threads
    spinner.start(); //Starts this spinner spinning asynchronously
@@ -48,13 +48,15 @@ int main(int argc, char **argv)
 
     ros::Subscriber sub_vel_cmd = nh.subscribe("robot/cmd_vel", 1, cmd_velCallback);
     ros::Publisher pub_debug = nh.advertise<std_msgs::Float32>("debug", 1);
-    g_OmniDrive.Init(&nh);
+    OmniDrive m_omnidrive(&nh);
+    pOmniDrive = &m_omnidrive;
 
     ros::Rate loop_rate(50);
 
     double t = 0;
     while (ros::ok()) {
        
+
         loop_rate.sleep();
     }
    return 0;

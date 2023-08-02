@@ -44,10 +44,10 @@ int main(int argc, char **argv)
     double t = 0;
     while (ros::ok()) {
        
-        m_omnidrive.Move(1, 1);
-        m_omnidrive.Move(1, -1);
-        m_omnidrive.Move(0, 1);
-        m_omnidrive.Move(0, -1);
+        // m_omnidrive.Move(1, 1);
+        // m_omnidrive.Move(1, -1);
+        // m_omnidrive.Move(0, 1);
+        // m_omnidrive.Move(0, -1);
         m_omnidrive.Move(2, 3.141592653589793/2);
     }
    return 0;

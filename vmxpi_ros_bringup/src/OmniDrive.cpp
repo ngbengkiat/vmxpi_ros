@@ -2,6 +2,7 @@
 #include "math.h"
 #include "SpeedProfile.h"
 
+
 #define PI  3.141592653589793
 
 PID::PID(){
@@ -72,6 +73,7 @@ void OmniDrive::yawCallback(const std_msgs::Float32::ConstPtr& msg)
 
 OmniDrive::OmniDrive() {
 }
+
 OmniDrive::OmniDrive(ros::NodeHandle *nh) {
     Init(nh);
 }
@@ -95,6 +97,7 @@ void OmniDrive::Init(ros::NodeHandle *nh) {
     pub_motorOut = nh->advertise<std_msgs::Float32>("motorOut", 1);
     pub_error = nh->advertise<std_msgs::Float32>("error", 1);
     pub_fb = nh->advertise<std_msgs::Float32>("feedback", 1);
+    pub_odom = nh->advertise<nav_msgs::Odometry>("odom", 50);
 
     m_pidController[0].setGains(0.5, 8.0, 0.0, pid_dT);
     m_pidController[1].setGains(0.5, 8.0, 0.0, pid_dT);
@@ -115,13 +118,18 @@ void OmniDrive::Run() {
     for (int i=0; i<3; i++) {
         encoderDist_2[i] = encoderDist[i];
     }
-    while(ros::ok()) {
+    current_time = ros::Time::now();
+    last_time = ros::Time::now();
 
+    while(ros::ok()) {
+        current_time = ros::Time::now();
         if (m_pidFlag && m_newMeasurementFlag) {
             m_newMeasurementFlag = false;
             DoPID();
         }
         publish_motors();
+        UpdateOdometry();
+        PublishOdometry();
         publish_data();     //for debug
         ros::spinOnce();
 
@@ -132,7 +140,8 @@ void OmniDrive::Run() {
     }
 }
 
-//For testing purpose
+
+//For testing purpose  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 void OmniDrive::DoRun() {
 
 
@@ -140,13 +149,55 @@ void OmniDrive::DoRun() {
             m_newMeasurementFlag = false;
             DoPID();
         }
+
         publish_motors();
         publish_data();     //for debug
 
 }
 
 void OmniDrive::UpdateOdometry(){
+    robotPos[X] += robotSpeed[X]*cos(robotPos[W]) - robotSpeed[Y]*sin(robotPos[W]);
+    robotPos[Y] += robotSpeed[X]*sin(robotPos[W]) + robotSpeed[Y]*cos(robotPos[W]);
+    robotPos[W] = curHeading;
+}
 
+void OmniDrive::PublishOdometry(){
+    //since all odometry is 6DOF we'll need a quaternion created from yaw
+    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(robotPos[W]);
+
+    //first, we'll publish the transform over tf
+    geometry_msgs::TransformStamped odom_trans;
+    odom_trans.header.stamp = current_time;
+    odom_trans.header.frame_id = "odom";
+    odom_trans.child_frame_id = "base_link";
+
+    odom_trans.transform.translation.x = robotPos[X];
+    odom_trans.transform.translation.y = robotPos[Y];
+    odom_trans.transform.translation.z = 0.0;
+    odom_trans.transform.rotation = odom_quat;
+
+    //send the transform
+    odom_broadcaster.sendTransform(odom_trans);
+
+    //next, we'll publish the odometry message over ROS
+    nav_msgs::Odometry odom;
+    odom.header.stamp = current_time;
+    odom.header.frame_id = "odom";
+
+    //set the position
+    odom.pose.pose.position.x = robotPos[X];
+    odom.pose.pose.position.y = robotPos[Y];
+    odom.pose.pose.position.z = 0.0;
+    odom.pose.pose.orientation = odom_quat;
+
+    //set the velocity
+    odom.child_frame_id = "base_link";
+    odom.twist.twist.linear.x = robotSpeed[X];
+    odom.twist.twist.linear.y = robotSpeed[Y];
+    odom.twist.twist.angular.z = robotSpeed[W];
+
+    //publish the message
+    pub_odom.publish(odom);
 }
 void OmniDrive::CalWheeSpeeds(double x, double y){
 

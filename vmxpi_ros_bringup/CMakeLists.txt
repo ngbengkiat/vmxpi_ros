@@ -19,6 +19,8 @@ find_package(catkin REQUIRED COMPONENTS
   vmxpi_ros_navx
   vmxpi_ros_servo
   vmxpi_ros_io
+  tf
+  nav_msgs
 
 )
 

@@ -21,7 +21,12 @@
 #include <vmxpi_ros/StopMode.h>
 #include <vmxpi_ros/LimitSwitch.h>
 #include <vmxpi_ros/MotorSpeed.h>
+#include <tf/transform_broadcaster.h>
+#include <nav_msgs/Odometry.h>
 
+#define X  0
+#define Y  1
+#define W  2
 class PID {
 
     private:
@@ -53,6 +58,7 @@ class OmniDrive {
         double wheelSpeed[3];
         double wheelPos[3];
         double robotSpeed[3];
+        double robotPos[3];
         double curHeading, targetHeading;
         double motorOut[3];
         PID m_pidController[3];
@@ -66,6 +72,9 @@ class OmniDrive {
         ros::Subscriber sub_enc0_cnt, sub_enc1_cnt, sub_enc2_cnt;
         ros::ServiceClient srv_motor_speed, srv_resetNavx, srv_reset_encoder;
         ros::Publisher pub_pidInput, pub_pidOutput, pub_motorOut, pub_error, pub_fb;
+        ros::Publisher pub_odom, pub_velocityY;
+        tf::TransformBroadcaster odom_broadcaster;
+        ros::Time current_time, last_time;
 
         public:
         OmniDrive();
@@ -78,6 +87,7 @@ class OmniDrive {
 
         void Init(ros::NodeHandle *nh);
         void UpdateOdometry();
+        void PublishOdometry();
         void CalWheeSpeeds(double x, double y);
         void DoPID();
         void DoPID2();

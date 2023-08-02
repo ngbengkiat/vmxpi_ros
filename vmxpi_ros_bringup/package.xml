@@ -20,6 +20,9 @@
   <depend>vmxpi_ros_navx</depend>
   <depend>vmxpi_ros_servo</depend>
   <depend>vmxpi_ros_io</depend>
+  <depend>tf</depend>
+  <depend>nav_msgs</depend>
+
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
